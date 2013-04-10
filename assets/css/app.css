@@ -6,6 +6,13 @@
 	box-sizing: border-box;
 }
 
+#search {
+	font-weight: bold;
+}
+
+#search a {
+	color: white;
+}
 
 #map {
 	min-height: 300px;

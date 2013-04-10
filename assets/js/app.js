@@ -115,6 +115,8 @@
 				if(results.length > 0) {
 					map.setBounds(bounds);
 				}
+				
+				$('.clear').show();
 			}
 		});
 		
