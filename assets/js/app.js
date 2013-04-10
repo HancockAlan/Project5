@@ -4,7 +4,7 @@
 	var jQT;
 	$(function(){ jQT = new $.jQTouch({}); });
 	
-	$('#home').bind('pageAnimationEnd', function(event, info) {
+	$('#home').bind('pageAnimationEnd', function(event, info) {		
 		if (info.direction == 'in') {
 			$("#map").show();
 			google.maps.event.trigger(map.map, 'resize');
@@ -92,6 +92,33 @@
 		e.preventDefault();
 		
 		return false;
+	});
+	
+	$('#search').on('submit', function(e) {
+		var $t = $(this);
+		var location = $t.find('#location').val();
+		var distance = $t.find('#distance').val();
+		
+		map.search(location, distance, function(results, response) {
+			if(response.success) {				
+				map.hideMarkers();
+				
+				var bounds = new google.maps.LatLngBounds();
+				
+				$.each(results, function(i, row) {
+					var marker = map.markers[row.ID - 1];
+					
+					marker.setVisible(true);
+					bounds.extend(marker.getPosition());
+				});
+				
+				if(results.length > 0) {
+					map.setBounds(bounds);
+				}
+			}
+		});
+		
+		e.preventDefault();
 	});
 
 	var map = $('#map').MobileMap({

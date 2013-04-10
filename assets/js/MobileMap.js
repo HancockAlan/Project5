@@ -59,6 +59,56 @@
 			$('a[href="#home"]').click();	
 		}
 		
+		t.search = function(location, distance, callback) {
+			if(typeof callback != "function") {
+				callback = function() {};
+			}
+			
+			distance = parseInt(distance);
+			
+			if(isNaN(distance)) {
+				distance = false;
+			}
+			
+			var _return = [];
+			
+			t.geocode(location, function(response) {
+				if(response.success) {
+					t.db.query('markers', function(row) {
+						var lat = response.results[0].geometry.location.lat();
+						var lng = response.results[0].geometry.location.lng();
+						var markerDistance = ((Math.acos(Math.sin(lat * Math.PI / 180) * Math.sin(row.lat * Math.PI / 180) + Math.cos(lat * Math.PI / 180) * Math.cos(row.lat * Math.PI / 180) * Math.cos((lng - row.lng) * Math.PI / 180)) * 180 / Math.PI) * 60 * 1.1515) * 1;
+						
+						if(!distance || distance > markerDistance) {
+							_return.push(row);
+						}
+					});
+				}
+
+				
+				callback(_return, response);
+			});
+			
+			return _return;
+		}
+		
+		t.setBounds = function(bounds) {
+			t.map.fitBounds(bounds);
+			t.bounds = bounds;
+		}
+		
+		t.hideMarkers = function() {
+			$.each(t.markers, function(i, marker) {
+				marker.setVisible(false);	
+			});
+		}
+		
+		t.showMarkers = function() {
+			$.each(t.markers, function(i, marker) {
+				marker.setVisible(true);	
+			});
+		}
+		
 		t.newMarker = function(lat, lng) {
 			var latLng = new google.maps.LatLng(lat, lng);
 		
